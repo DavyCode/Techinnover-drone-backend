@@ -165,7 +165,24 @@ app.post('/api/drones/:droneId/load/:medCode', (req, res) => {
   } catch (error) {
     throw new InternalServerError(error.message)
   }
-})
+});
+
+/**
+ * checking loaded medication items for a given drone
+ */
+app.get('/api/drones/:droneId/items', (req, res) => {
+  try {
+    const drone = findDroneById(req.params.droneId);
+    if (!drone) {
+      throw new NotFoundError("Drone not found");
+    }
+
+    return res.status(200).json({ data: drone.loadedItems });
+  } catch (error) {
+    throw new InternalServerError(error.message)
+  }
+});
+
 
 // error handler
 app.use(errorHandler);
