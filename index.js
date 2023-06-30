@@ -3,6 +3,8 @@
 const express = require('express');
 const DronesDB = require('./db/drones.db');
 const MedicationsDB = require('./db/medications.db');
+const BatteryDB = require('./db/batteryLogs.db')
+const scheduleJob = require('./jobs/scheduler');
 const { genUniqId } = require("./utils");
 const {
   BadRequestError,
@@ -17,10 +19,12 @@ const { regDroneValidator } = require('./middleware/input.validation');
 
 const app = express();
 app.use(express.json());
+scheduleJob.start()
 
 // DB Operations
 const getDrones = () => DronesDB;
 const getMeds = () => MedicationsDB;
+const getBatteryLogs = () => BatteryDB;
 
 const registerDrone = (item) => {
   const droneExist = findDroneBySerialNumber(item.serialNumber)
@@ -218,6 +222,18 @@ app.get('/api/drones/:droneId/battery', (req, res) => {
     }});
   } catch (error) {
     throw new InternalServerError(error.message)
+  }
+})
+
+/**
+ * drones battery event log
+ */
+app.get('/api/drones/battery/logs', (req, res) => {
+  try {
+    const allBatteryLogs = getBatteryLogs();
+    res.status(200).json({ data: allBatteryLogs });
+  } catch (error) {
+    throw new InternalServerError(error.message);
   }
 })
 
