@@ -7,7 +7,8 @@ const { genUniqId } = require("./utils");
 const {
   BadRequestError,
   NotFoundError,
-  InternalServerError
+  InternalServerError,
+  errorHandler
 } = require("./utils/error");
 const { 
   PORT,
@@ -16,9 +17,6 @@ const { regDroneValidator } = require('./middleware/input.validation');
 
 const app = express();
 app.use(express.json());
-
-
-// app.use(errorHandler);
 
 // DB Operations
 const getDrones = () => DronesDB;
@@ -58,7 +56,7 @@ app.get('/', (req, res) => {
 app.get('/api/drones', (req, res) => {
   try {
     const allDrones = getDrones();
-    res.status(200).json({ data: allDrones });
+    res.status(200).json({ data: allDrones, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
@@ -70,7 +68,7 @@ app.get('/api/drones', (req, res) => {
 app.get('/api/medications', (req, res) => {
   try {
     const allMeds = getMeds();
-    res.status(200).json({ data: allMeds });
+    res.status(200).json({ data: allMeds, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
@@ -91,12 +89,15 @@ app.post('/api/drones/register', regDroneValidator, (req, res) => {
 
     const createdDrone = registerDrone(item)
     
-    return res.status(201).json({ data: createdDrone })
+    return res.status(201).json({ data: createdDrone, status: "success" })
   } catch (error) {
     throw new InternalServerError(error.message)
   }
 });
 
-exports.default = app.listen(PORT, () => {
+// error handler
+app.use(errorHandler);
+
+app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
 });
