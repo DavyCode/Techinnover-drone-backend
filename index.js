@@ -188,7 +188,7 @@ app.get('/api/drones/:droneId/items', (req, res) => {
 });
 
 /**
- * checking available drones for loading
+ * check available drones for loading
  */
 app.get('/api/drones/available', (req, res) => {
   try {
@@ -203,6 +203,23 @@ app.get('/api/drones/available', (req, res) => {
   }
 })
 
+/**
+ * check drone battery level for a given drone
+ */
+app.get('/api/drones/:droneId/battery', (req, res) => {
+  try {
+    const drone = findDroneById(req.params.droneId);
+    if (!drone) {
+      throw new NotFoundError("Drone not found");
+    }
+
+    return res.status(200).json({ data: { 
+      batteryCapacityPercentage: drone.batteryCapacityPercentage
+    }});
+  } catch (error) {
+    throw new InternalServerError(error.message)
+  }
+})
 
 // error handler
 app.use(errorHandler);
