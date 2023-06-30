@@ -24,20 +24,13 @@ class InternalServerError extends APIError {
 	}
 }
 
-const errorHandler = (
-	error,
-	req,
-	res,
-	next
-) => {
+const errorHandler = (error, req, res, next) => {
 	/**
 	 * log the error message, and meta object
 	 */
 	let respondWith = {
 		errors: [error.message ? error.message : "Something went wrong"],
-		statusCode: error.statusCode
-			? error.statusCode
-			: 500,
+		statusCode: error.statusCode? error.statusCode : 500,
 		status: "failure",
 	};
 
@@ -47,16 +40,9 @@ const errorHandler = (
 
 	if (process.env.NODE_ENV === "production" && !(error instanceof APIError)) {
 		// Push to logger in production
-		// Pubsub.emit('error', { respondWith, error })
 	}
 
-	res
-		.status(
-			error.statusCode
-				? error.statusCode
-				: 500
-		)
-		.json(respondWith);
+	res.status(error.statusCode ? error.statusCode : 500).json(respondWith);
 };
 
 module.exports = {
