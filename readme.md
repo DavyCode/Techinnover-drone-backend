@@ -6,7 +6,7 @@
 
 ---
 
-:scroll: **START**
+**START**
 
 ### Introduction
 
@@ -73,4 +73,26 @@ While implementing your solution **please take care of the following requirement
 
 ---
 
-:scroll: **END**
+**END**
+
+---
+
+## To Start Project
+
+- **Install dependencies**
+
+Using npm package manager
+
+`npm install`
+
+- **Create .env file in project root directory**
+
+Reference .env.sample file to see required variables
+
+- **Run server in development**
+
+`npm run dev`
+
+- **Run server in production**
+
+`npm start`
