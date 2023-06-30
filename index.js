@@ -38,6 +38,52 @@ const findDroneBySerialNumber = (serialNumber) => {
   return getDrones().find((drone) => drone.serialNumber === serialNumber)
 }
 
+const loadDrone = (droneId, medication) => {
+
+  getDrones().forEach(drone => {
+    if (drone._id === droneId) {
+
+      checkDroneWeight(drone, medication);
+
+      if (drone.state !== "LOADING") {
+        throw new BadRequestError("Drone is not currently loading");
+      }
+
+      if (drone.batteryCapacityPercentage < 25) {
+
+        drone.state = "IDLE";
+
+        throw new BadRequestError("Drone out of battery capacity, recharge!");
+      }
+
+      drone.loadedWeightsKg += medication.weight;
+
+      if (drone.loadedWeightsKg === drone.weightLimitKg) {
+        drone.state = "LOADED"
+      }
+
+      drone.loadedItems.push(medication);
+    }
+  });
+
+  return findDroneById(droneId)
+}
+
+const findMedByCode = (code) => {
+  return getMeds().find((med) => med.code === code)
+}
+
+const findDroneById = (droneId) => {
+  return getDrones().find((drone) => drone._id === droneId)
+}
+
+const checkDroneWeight = (drone, medication) => {
+  const totalWeight = drone.loadedWeightsKg + medication.weight;
+
+  if (totalWeight > drone.weightLimitKg){
+    throw new BadRequestError("Drone overload, please use another drone");
+  }
+}
 
 /**********************************************
  * ROUTE HANDLER
@@ -94,6 +140,32 @@ app.post('/api/drones/register', regDroneValidator, (req, res) => {
     throw new InternalServerError(error.message)
   }
 });
+
+/**
+ * Load a drone with medication items
+ */
+app.post('/api/drones/:droneId/load/:medCode', (req, res) => {
+  try {
+    // find the med
+    const medication = findMedByCode(req.params.medCode);
+    if (!medication) {
+      throw new NotFoundError("Medication with the given code not found")
+    }
+
+    // find the drone to load
+    const drone = findDroneById(req.params.droneId);
+    if (!drone) {
+      throw new NotFoundError("Drone with the given droneId not found")
+    }
+
+    // load med to drone
+    const loadedDrone = loadDrone(drone._id, medication);
+
+    return res.status(200).json({ data: loadedDrone });
+  } catch (error) {
+    throw new InternalServerError(error.message)
+  }
+})
 
 // error handler
 app.use(errorHandler);
