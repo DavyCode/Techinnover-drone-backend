@@ -85,6 +85,10 @@ const checkDroneWeight = (drone, medication) => {
   }
 }
 
+const getLoadingDrones = () => {
+  return getDrones().filter(drone => drone.state === "LOADING")
+}
+
 /**********************************************
  * ROUTE HANDLER
  ***************************************************/
@@ -182,6 +186,22 @@ app.get('/api/drones/:droneId/items', (req, res) => {
     throw new InternalServerError(error.message)
   }
 });
+
+/**
+ * checking available drones for loading
+ */
+app.get('/api/drones/available', (req, res) => {
+  try {
+    const drone = getLoadingDrones();
+    if (drone.length < 1) {
+      throw new NotFoundError("All drones are busy at this time");
+    }
+
+    return res.status(200).json({ data: drone });
+  } catch (error) {
+    throw new InternalServerError(error.message)
+  }
+})
 
 
 // error handler
