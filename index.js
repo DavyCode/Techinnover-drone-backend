@@ -169,7 +169,7 @@ app.post('/api/drones/:droneId/load/:medCode', (req, res) => {
     // load med to drone
     const loadedDrone = loadDrone(drone._id, medication);
 
-    return res.status(200).json({ data: loadedDrone });
+    return res.status(200).json({ data: loadedDrone, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message)
   }
@@ -185,7 +185,7 @@ app.get('/api/drones/:droneId/items', (req, res) => {
       throw new NotFoundError("Drone not found");
     }
 
-    return res.status(200).json({ data: drone.loadedItems });
+    return res.status(200).json({ data: drone.loadedItems, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message)
   }
@@ -201,7 +201,7 @@ app.get('/api/drones/available', (req, res) => {
       throw new NotFoundError("All drones are busy at this time");
     }
 
-    return res.status(200).json({ data: drone });
+    return res.status(200).json({ data: drone, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message)
   }
@@ -218,8 +218,10 @@ app.get('/api/drones/:droneId/battery', (req, res) => {
     }
 
     return res.status(200).json({ data: { 
-      batteryCapacityPercentage: drone.batteryCapacityPercentage
-    }});
+        batteryCapacityPercentage: drone.batteryCapacityPercentage
+      },
+      status: "success"
+    });
   } catch (error) {
     throw new InternalServerError(error.message)
   }
@@ -231,7 +233,7 @@ app.get('/api/drones/:droneId/battery', (req, res) => {
 app.get('/api/drones/battery/logs', (req, res) => {
   try {
     const allBatteryLogs = getBatteryLogs();
-    res.status(200).json({ data: allBatteryLogs });
+    res.status(200).json({ data: allBatteryLogs, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
