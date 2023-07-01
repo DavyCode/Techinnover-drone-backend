@@ -110,7 +110,7 @@ app.get('/', (req, res) => {
 app.get('/api/drones', (req, res) => {
   try {
     const allDrones = getDrones();
-    res.status(200).json({ data: allDrones, status: "success" });
+    return res.status(200).json({ data: allDrones, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
@@ -122,7 +122,7 @@ app.get('/api/drones', (req, res) => {
 app.get('/api/medications', (req, res) => {
   try {
     const allMeds = getMeds();
-    res.status(200).json({ data: allMeds, status: "success" });
+    return res.status(200).json({ data: allMeds, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
@@ -233,7 +233,7 @@ app.get('/api/drones/:droneId/battery', (req, res) => {
 app.get('/api/drones/battery/logs', (req, res) => {
   try {
     const allBatteryLogs = getBatteryLogs();
-    res.status(200).json({ data: allBatteryLogs, status: "success" });
+    return res.status(200).json({ data: allBatteryLogs, status: "success" });
   } catch (error) {
     throw new InternalServerError(error.message);
   }
